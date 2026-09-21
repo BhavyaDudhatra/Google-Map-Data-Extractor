@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Maps Data Extractor",
+  "version": "1.0.0",
+  "description": "Automatically search Google Maps for any business category across up to 1000 areas, extract name/address/phone, and export everything to an Excel file.",
+  "minimum_chrome_version": "110",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "tabs",
+    "activeTab",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://www.google.com/*",
+    "https://maps.google.com/*",
+    "https://*.google.com/maps/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Maps Data Extractor"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.google.com/*",
+        "https://maps.google.com/*"
+      ],
+      "js": [
+        "content/selectors.js",
+        "content/extract.js",
+        "content/navigation.js",
+        "content/runner.js",
+        "content/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

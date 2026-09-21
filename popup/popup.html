@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Maps Data Extractor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="appHeader">
+    <img src="../icons/icon32.png" alt="" class="logo">
+    <div class="appTitleBlock">
+      <h1>Maps Data Extractor</h1>
+      <span class="appSub">Multi-area Google Maps scraping</span>
+    </div>
+    <span id="statusChip" class="chip chipIdle">Idle</span>
+  </header>
+
+  <section class="card" id="configCard">
+    <div class="cardTitleRow">
+      <span class="cardTitle">1 · Areas to search</span>
+      <span class="cardHint">one area per line</span>
+    </div>
+    <textarea id="areasInput" rows="6" spellcheck="false"
+      placeholder="Bopal, Ahmedabad&#10;Navrangpura, Ahmedabad&#10;Sargasan, Gandhinagar"></textarea>
+    <div class="countRow">
+      <span id="areaCount">0 areas entered</span>
+      <span class="limit">min 1 · max 1000</span>
+    </div>
+
+    <div class="cardTitleRow secondTitle">
+      <span class="cardTitle">2 · Profession / Business category</span>
+    </div>
+    <input id="professionInput" type="text" placeholder="Bookstore" spellcheck="false">
+    <div class="sampleRow">Examples: Bookstore · Dentist · Gyms · Hospitals · Schools · Coaching · Restaurants</div>
+  </section>
+
+  <section class="card progressCard" id="progressCard">
+    <div class="cardTitleRow">
+      <span class="cardTitle">Live Progress</span>
+      <span id="pausedHint" class="pausedHint hidden">paused</span>
+    </div>
+
+    <div class="kvGrid">
+      <div class="kvItem">
+        <span class="kvLabel">Current Area</span>
+        <span class="kvValue" id="currentArea">-</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Area Progress</span>
+        <span class="kvValue" id="areaProgress">0 / 0</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Current Search</span>
+        <span class="kvValue searchText" id="currentSearch">-</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Profession</span>
+        <span class="kvValue" id="profession">-</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Results Found</span>
+        <span class="kvValue" id="resultsFound">0</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Current Page</span>
+        <span class="kvValue" id="currentPage">0</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Total Records</span>
+        <span class="kvValue" id="totalRecords">0</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Page Progress</span>
+        <span class="kvValue" id="pageProgress">0 / 0</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Duplicates Removed</span>
+        <span class="kvValue" id="duplicates">0</span>
+      </div>
+      <div class="kvItem">
+        <span class="kvLabel">Temporarily Closed Skipped</span>
+        <span class="kvValue" id="closedSkipped">0</span>
+      </div>
+    </div>
+
+    <div id="statusDetail" class="statusLine hidden">-</div>
+
+    <div class="progressWrap">
+      <div class="progressTrack"><div id="progressFill" class="progressFill"></div></div>
+      <div id="totalProgressText" class="progressText">0% &middot; 0 / 0 areas</div>
+    </div>
+
+    <div id="summaryBox" class="summaryBox hidden">
+      <div class="summaryTitle" id="summaryTitle">Extraction Completed</div>
+      <div id="summaryLines" class="summaryLines"></div>
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="startBtn" class="btn btnPrimary">START EXTRACTION</button>
+    <button id="pauseBtn" class="btn" disabled>Pause</button>
+    <button id="stopBtn" class="btn btnDanger" disabled>Stop</button>
+    <button id="exportBtn" class="btn btnExport">DOWNLOAD EXCEL</button>
+    <button id="resetBtn" class="btn btnGhost">Reset</button>
+  </section>
+
+  <div id="noticeBar" class="noticeBar hidden"></div>
+  <div id="errorBox" class="errorBox hidden"></div>
+
+  <footer class="footer">Keeps running even if this popup is closed. Data is saved continuously.</footer>
+
+  <script src="../lib/xlsx.full.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
