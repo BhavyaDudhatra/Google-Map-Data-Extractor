@@ -30,16 +30,27 @@ function dedupeKey(record) {
   return (base || phone || '') ? base + (phone ? '|' + phone : '') : '';
 }
 
+function digitGroups(text) {
+  return String(text || '').split(/\D+/).filter(Boolean);
+}
+
 function isProbablyPhone(text) {
   const t = cleanText(text || '');
   if (!t || !/\d/.test(t)) return false;
   const lower = t.toLowerCase();
-  const hasAddressWords = /(road|rd\.|street|st\.|lane|ln\.|nagar|society|colony|complex|tower|mall|plaza|building|cross|crossing|chowk|market|sector|phase|block|shop|office|floor|lvl|highway|hwy|opp|opposite|near|beside|layout|ext|main|bungalows?|plot)\b/i.test(lower);
-  const hasComma = t.indexOf(',') !== -1;
-  if (hasAddressWords && hasComma) return false;
+  const hasAddressWords = /(road|rd\.?|street|st\.?|lane|ln\.?|nagar|society|colony|complex|tower|mall|plaza|building|cross|crossing|chowk|market|sector|phase|block|shop|office|unit|floor|lvl|highway|hwy|opp|opposite|near|beside|layout|ext|extension|main|bungalows?|plot|area|district|estate|drive|way)\b/i.test(lower);
+  if (hasAddressWords) return false;
   const digits = cleanPhoneDigits(t);
   if (digits.length < 7 || digits.length > 15) return false;
+  const runs = digitGroups(t);
+  let maxRun = 0;
+  for (const r of runs) {
+    if (r.length > maxRun) maxRun = r.length;
+  }
+  if (runs.length > 4) return false;
+  if (runs.length > 1 && maxRun < 3) return false;
   if (/[a-z]/i.test(lower) && digits.length < 9) return false;
+  if (lower.indexOf('tel:') !== -1) return false;
   return true;
 }
 
@@ -58,18 +69,25 @@ function searchPhoneInText(text) {
 function addressScore(line) {
   const t = cleanText(line);
   if (!t) return -100;
+  const lower = t.toLowerCase();
   const words = t.split(/\s+/).length;
   const hasDigits = /\d/.test(t);
   const hasComma = /,/.test(t);
-  const hasAreaSuffix = /(nagar|ahmedabad|gandhinagar|surendranagar|surat|vadodara|rajkot|junagadh|bhavnagar|jamnagar|amreli|porbandar|bhuj|mandvi|anjar|kalol|mehsana|nadiad|anand|vidhyanagar|petlad|godhra|palanpur|itarsi|city|district|state)/i.test(t);
-  const hint = MapsExp.addressHint.test(t);
+  const hasAreaSuffix = /(nagar|ahmedabad|gandhinagar|surendranagar|surat|vadodara|rajkot|junagadh|bhavnagar|jamnagar|amreli|porbandar|bhuj|mandvi|anjar|kalol|mehsana|nadiad|anand|vidhyanagar|petlad|godhra|palanpur|itarsi|gujarat|mumbai|delhi|bengaluru|bangalore|pune|kolkata|chennai|hyderabad|jaipur|goa|city|district|state|metro|highway)/i.test(lower);
+  const hint = MapsExp.addressHint.test(lower);
+  const isTime = /(am\b|pm\b|open\b|opened\b|closed\b|opens\b|closes\b|hours\b|hour\b|minutes\b|min\b|noon|midnight|today|tomorrow|yesterday)/i.test(t);
+  const isRating = /(^\s*\d([.,]\d)?\s*(\([\d,]+\))?\s*$)|(\breviews?\b|\bratings?\b|\bstars?\b|\bvoted?\b)/i.test(t);
   let score = 0;
   if (hasDigits) score += 2;
   if (hasComma) score += 2;
   if (hint) score += 3;
   if (hasAreaSuffix) score += 2;
   if (words >= 3) score += 1;
+  if (isTime) score -= 6;
+  if (isRating) score -= 4;
   if (isProbablyPhone(t)) return -50;
+  if (words === 1) score -= 2;
+  if (!hasDigits && !hasComma && !hasAreaSuffix) score -= 2;
   return score;
 }
 
@@ -77,42 +95,80 @@ function extractPhoneFromElement(root) {
   for (const selector of MapsDom.detailPhone) {
     const nodes = findIn(root, selector);
     for (const node of nodes) {
-      const text = cleanText(node.innerText || node.getAttribute('href') || '');
-      if (isProbablyPhone(text)) return text;
+      const href = node.getAttribute ? node.getAttribute('href') : '';
+      if (typeof href === 'string' && /^tel:/i.test(href)) {
+        const digits = cleanPhoneDigits(href.slice(4));
+        if (digits.length >= 7 && digits.length <= 15) {
+          const canonical = normPhone(digits);
+          if (canonical) {
+            const text = cleanText(node.innerText || '');
+            if (text && isProbablyPhone(text) && normPhone(text) === canonical) return text;
+            return canonical;
+          }
+        }
+      }
+    }
+  }
+  for (const selector of MapsDom.detailPhone) {
+    const nodes = findIn(root, selector);
+    for (const node of nodes) {
+      const text = cleanText(node.innerText || node.getAttribute('aria-label') || '');
+      if (text && isProbablyPhone(text)) return text;
     }
   }
   return '';
+}
+
+function cleanAddressLabel(text) {
+  let cleaned = cleanText(text);
+  cleaned = cleaned.replace(/^(address|full address|area)\s*[:.\u2013-]?\s*/i, '').trim();
+  if (/^copy address\s*$/i.test(cleaned)) return '';
+  return cleaned;
 }
 
 function extractAddressFromElement(root) {
   for (const selector of MapsDom.detailAddress) {
     const nodes = findIn(root, selector);
     for (const node of nodes) {
-      const text = cleanText(node.innerText || node.getAttribute('aria-label') || '');
-      if (text && !/copy address/i.test(text) && text.length > 5 && addressScore(text) >= 2) return text;
+      const raw = cleanText(node.innerText || node.getAttribute('aria-label') || '');
+      const text = cleanAddressLabel(raw);
+      if (text && text.length > 4 && addressScore(text) >= 2) return text;
     }
   }
-  let addressLine = '';
   const headings = findIn(root, MapsDom.headingText);
   for (const heading of headings) {
     const h = cleanText(heading.innerText || '');
     if (MapsText.addressHeading === h.toLowerCase() || MapsText.addressLabel === h.toLowerCase()) {
       const sibling = heading.parentElement ? heading.parentElement.nextElementSibling : null;
       if (sibling) {
-        const text = cleanText(sibling.innerText || '');
+        const text = cleanAddressLabel(sibling.innerText || '');
         if (text && addressScore(text) >= 1) return text;
       }
     }
   }
-  return addressLine;
+  return '';
+}
+
+function isValidNameText(text) {
+  if (!text) return false;
+  if (containsTemporarilyClosed(text)) return false;
+  if (text.length < 2) return false;
+  if (/^[.,\u00b7|:;\-]+$/.test(text)) return false;
+  if (isProbablyPhone(text)) return false;
+  const lower = text.toLowerCase();
+  if (/^(address|menu|directions|overview|reviews?|photos?|about|share|save start|clone|call now|not there|closed)\b/.test(lower)) return false;
+  if (/\b\d\s*\.?\s*\d?\s*stars?\b/i.test(lower)) return false;
+  return true;
 }
 
 function extractNameElement(root) {
+  const seenNodes = new Set();
   for (const selector of MapsDom.detailName) {
-    const node = root.querySelector(selector);
-    if (node) {
+    for (const node of findIn(root, selector)) {
+      if (seenNodes.has(node)) continue;
+      seenNodes.add(node);
       const text = cleanText(node.getAttribute('aria-label') || node.innerText || '');
-      if (text) return text;
+      if (isValidNameText(text)) return text;
     }
   }
   return '';
@@ -156,7 +212,7 @@ function extractFeedName(article) {
 
 function extractFeedSnapshot(article) {
   const text = cleanText(article.innerText || '');
-  const lines = text.split('|').map(function (l) { return cleanText(l); }).filter(Boolean);
+  const lines = text.split(/[|\n·]/).map(function (l) { return cleanText(l); }).filter(Boolean);
   return lines;
 }
 
@@ -166,9 +222,11 @@ function extractFromDetailPanel(root) {
   let address = extractAddressFromElement(root);
   if (!address) {
     const lines = cleanText(root.innerText || '').split('\n').map(function (l) { return cleanText(l); }).filter(Boolean);
+    const nameKey = lowerPlain(name);
     let best = '';
     let bestScore = -1;
     for (const line of lines) {
+      if (nameKey && lowerPlain(line) === nameKey) continue;
       if (isProbablyPhone(line)) continue;
       const score = addressScore(line);
       if (score > bestScore) {
@@ -185,9 +243,11 @@ function extractFromFeedItem(article) {
   const link = extractFeedLink(article);
   const url = link ? link.getAttribute('href') : '';
   const name = extractFeedName(article);
+  const nameKey = lowerPlain(name);
   const snapshot = extractFeedSnapshot(article);
   let address = '';
   for (const line of snapshot) {
+    if (nameKey && lowerPlain(line) === nameKey) continue;
     if (isProbablyPhone(line)) continue;
     if (addressScore(line) >= 4) {
       address = line;
