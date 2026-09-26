@@ -231,7 +231,7 @@ const Runner = (function () {
       return false;
     }
     if (key) seenSet.add(key);
-    if (!record.name && !record.phone && !record.address) return false;
+    if (!record.name && !record.phone && !record.address && !record.website && !record.fullData) return false;
     pendingBatch.push(record);
     job.areaCollected += 1;
     job.totalRecords += 1;
@@ -425,6 +425,11 @@ const Runner = (function () {
       detail = extractFromDetailPanel(document);
     }
 
+    let fullData = '';
+    if (detail && clicked && job.status === 'running') {
+      fullData = extractFullPanelText();
+    }
+
     if (currentPanelHasTemporarilyClosed()) {
       job.temporarilyClosedSkipped = (job.temporarilyClosedSkipped || 0) + 1;
       persistSoon(300);
@@ -441,7 +446,15 @@ const Runner = (function () {
       name: cleanText(detail.name),
       address: cleanText(detail.address),
       phone: cleanText(detail.phone),
-      url: base.url || ''
+      website: cleanText(detail.website),
+      rating: cleanText(detail.rating),
+      reviews: cleanText(detail.reviews),
+      hours: cleanText(detail.hours),
+      plusCode: cleanText(detail.plusCode),
+      category: cleanText(detail.category),
+      priceLevel: cleanText(detail.priceLevel),
+      url: base.url || '',
+      fullData: fullData
     };
     saveRecord(record);
   }

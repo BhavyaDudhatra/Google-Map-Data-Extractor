@@ -19,6 +19,26 @@ const MapsDom = {
     'a[data-tooltip*="phone" i]'
   ],
 
+  detailWebsite: [
+    '[data-item-id*="website"]',
+    'a[data-item-id*="website"]'
+  ],
+
+  detailRating: [
+    '[aria-label*="stars"]',
+    '[aria-label*=" rated "]'
+  ],
+
+  detailHours: [
+    '[data-item-id^="oh-"]',
+    '[data-item-id*="hours"]'
+  ],
+
+  detailPlusCode: [
+    '[data-item-id*="plus-code"]',
+    'button[data-item-id*="plus-code"]'
+  ],
+
   headingText: ['h1', 'h2', 'h3', 'span[role="heading"]'],
   panelRoot: 'div[role="main"]',
 

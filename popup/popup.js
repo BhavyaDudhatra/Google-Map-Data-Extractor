@@ -385,6 +385,31 @@ const UI = (function () {
     return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '_' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
   }
 
+  const EXPORT_HEADERS = [
+    'Area', 'Profession', 'Name', 'Address', 'Phone Number',
+    'Website', 'Rating', 'Number of Reviews', 'Hours', 'Plus Code',
+    'Category', 'Price Level', 'Google Maps Link', 'All Visible Data'
+  ];
+
+  function normalizeRow(rec) {
+    return {
+      'Area': rec.area || '',
+      'Profession': rec.profession || '',
+      'Name': rec.name || '',
+      'Address': rec.address || '',
+      'Phone Number': rec.phone || '',
+      'Website': rec.website || '',
+      'Rating': rec.rating || '',
+      'Number of Reviews': rec.reviews || '',
+      'Hours': rec.hours || '',
+      'Plus Code': rec.plusCode || '',
+      'Category': rec.category || '',
+      'Price Level': rec.priceLevel || '',
+      'Google Maps Link': rec.url || '',
+      'All Visible Data': rec.fullData || ''
+    };
+  }
+
   function exportExcel() {
     collectRecords().then(function (records) {
       if (!records.length) {
@@ -392,38 +417,37 @@ const UI = (function () {
         return;
       }
       const cleaned = dedupeRecords(records);
-      const rows = cleaned.map(function (rec) {
-        return {
-          'Area': rec.area || '',
-          'Profession': rec.profession || '',
-          'Name': rec.name || '',
-          'Full Address': rec.address || '',
-          'Phone Number': rec.phone || '',
-          'Google Maps Link': rec.url || ''
-        };
-      });
+      const rows = cleaned.map(normalizeRow);
 
       if (typeof XLSX === 'undefined') {
         exportCsv(rows);
         return;
       }
 
-      const headers = ['Area', 'Profession', 'Name', 'Full Address', 'Phone Number', 'Google Maps Link'];
-      const sheet = XLSX.utils.json_to_sheet(rows, { header: headers });
+      const sheet = XLSX.utils.json_to_sheet(rows, { header: EXPORT_HEADERS });
       sheet['!cols'] = [
-        { wch: 22 }, { wch: 16 }, { wch: 34 }, { wch: 48 }, { wch: 20 }, { wch: 58 }
+        { wch: 22 }, { wch: 16 }, { wch: 34 }, { wch: 48 }, { wch: 20 },
+        { wch: 40 }, { wch: 8 }, { wch: 14 }, { wch: 26 }, { wch: 20 },
+        { wch: 24 }, { wch: 10 }, { wch: 58 }, { wch: 90 }
       ];
+      const range = XLSX.utils.decode_range(sheet['!ref']);
+      const lastCol = range.e.c;
+      for (let r = range.s.r; r <= range.e.r; r++) {
+        const addr = XLSX.utils.encode_cell({ r: r, c: lastCol });
+        if (!sheet[addr]) continue;
+        sheet[addr].s = { alignment: { vertical: 'top', wrapText: true } };
+      }
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, sheet, 'Business Data');
 
-      const out = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const out = XLSX.write(workbook, { bookType: 'xlsx', type: 'array', cellStyles: true });
       const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       downloadBlob(blob, 'google_maps_data_' + stamp() + '.xlsx');
     });
   }
 
   function exportCsv(rows) {
-    const headers = ['Area', 'Profession', 'Name', 'Full Address', 'Phone Number', 'Google Maps Link'];
+    const headers = EXPORT_HEADERS;
     const escapeCell = function (v) {
       const s = String(v || '');
       return '"' + s.replace(/"/g, '""') + '"';

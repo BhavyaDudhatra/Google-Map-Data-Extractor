@@ -48,7 +48,8 @@ style extensions:
 - **Data persistence**: records are saved to `chrome.storage.local`
   continuously, so an unexpected reload / crash does not wipe progress.
 - **Excel export** via bundled SheetJS — columns:
-  `Area | Profession | Name | Full Address | Phone Number | Google Maps Link`.
+  `Area | Profession | Name | Address | Phone | Website | Rating | Reviews |
+  Hours | Plus Code | Category | Price Level | Google Maps Link | All Visible Data`.
 - **Error handling**: retries loading, detects "no results", blocked/captcha
   pages, missing detail panels, etc., without discarding collected data.
 
@@ -222,8 +223,10 @@ default quota.
 
 - Generated in the popup with the bundled SheetJS (`lib/xlsx.full.min.js`).
 - Sheet name: `Business Data`.
-- Columns: `Area`, `Profession`, `Name`, `Full Address`, `Phone Number`,
-  `Google Maps Link`.
+- Columns: `Area`, `Profession`, `Name`, `Address`, `Phone Number`, `Website`,
+  `Rating`, `Number of Reviews`, `Hours`, `Plus Code`, `Category`,
+  `Price Level`, `Google Maps Link`, and `All Visible Data` (the complete
+  visible text of each business's detail panel, wrapped and top-aligned).
 - Column widths are pre-set; the file opens in Microsoft Excel, LibreOffice,
   Google Sheets, and Numbers.
 - If reviewing on a machine without a working `XLSX` bundle, the export falls

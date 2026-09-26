@@ -161,16 +161,22 @@ function isValidNameText(text) {
   return true;
 }
 
-function extractNameElement(root) {
+function findDetailNameNode() {
   const seenNodes = new Set();
   for (const selector of MapsDom.detailName) {
-    for (const node of findIn(root, selector)) {
+    for (const node of findIn(document, selector)) {
       if (seenNodes.has(node)) continue;
       seenNodes.add(node);
       const text = cleanText(node.getAttribute('aria-label') || node.innerText || '');
-      if (isValidNameText(text)) return text;
+      if (isValidNameText(text)) return node;
     }
   }
+  return null;
+}
+
+function extractNameElement(root) {
+  const node = findDetailNameNode();
+  if (node) return cleanText(node.getAttribute('aria-label') || node.innerText || '');
   return '';
 }
 
@@ -236,7 +242,156 @@ function extractFromDetailPanel(root) {
     }
     if (bestScore >= 4) address = best;
   }
-  return { name: name, address: address, phone: phone };
+  const categoryInfo = extractCategoryAndPrice(root);
+  return {
+    name: name,
+    address: address,
+    phone: phone,
+    website: extractWebsite(root),
+    rating: extractRating(root),
+    reviews: extractReviewsCount(root),
+    hours: extractHours(root),
+    plusCode: extractPlusCode(root),
+    category: categoryInfo.category,
+    priceLevel: categoryInfo.priceLevel
+  };
+}
+
+function findInfoContainer() {
+  const nameNode = findDetailNameNode();
+  if (!nameNode) return null;
+  let el = nameNode;
+  let best = nameNode;
+  for (let step = 0; step < 7 && el && el !== document.body; step++) {
+    if (el.querySelector(MapsDom.feed)) break;
+    best = el;
+    el = el.parentElement;
+  }
+  return best;
+}
+
+function panelTextLines() {
+  const container = findInfoContainer();
+  const source = container || document.body;
+  const text = cleanText(source.innerText || '');
+  return text.split('\n').map(function (l) { return cleanText(l); }).filter(Boolean);
+}
+
+function dedupeLines(lines) {
+  const seen = new Set();
+  const out = [];
+  for (const line of lines) {
+    const key = lowerPlain(line);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(line);
+  }
+  return out;
+}
+
+function extractFullPanelText() {
+  return dedupeLines(panelTextLines()).join('\n');
+}
+
+function extractWebsite(root) {
+  for (const node of findIn(root, MapsDom.detailWebsite)) {
+    const href = node.getAttribute('href') || '';
+    const text = cleanText(node.innerText || '');
+    if (/^https?:\/\//i.test(text)) return text;
+    if (/^https?:\/\//i.test(href)) return href;
+  }
+  const links = root.querySelectorAll('a[href]');
+  for (const node of links) {
+    const href = String(node.getAttribute('href') || '').trim();
+    if (!href) continue;
+    const lower = href.toLowerCase();
+    if (!/^https?:\/\//i.test(lower)) continue;
+    if (/google\.com|g\.co|maps\.google/i.test(lower)) continue;
+    const text = cleanText(node.innerText || '');
+    if (text && /^https?:\/\//i.test(text)) return text;
+    return href;
+  }
+  return '';
+}
+
+function extractRating(root) {
+  for (const node of findIn(root, MapsDom.detailRating)) {
+    const label = cleanText(node.getAttribute('aria-label') || node.innerText || '');
+    const m = label.match(/(?:rated\s+)?(\d(?:[.,]\d)?)\s*(?:out of 5|stars?)/i);
+    if (m) return m[1];
+    const s = label.match(/(\d(?:[.,]\d)?)\s*[★]/);
+    if (s) return s[1];
+  }
+  const text = cleanText(root.innerText || '');
+  const m = text.match(/(\d(?:[.,]\d)?)\s*[★]/);
+  if (m) return m[1];
+  return '';
+}
+
+function extractReviewsCount(root) {
+  const nodes = findIn(root, '[aria-label*="reviews" i], [aria-label*="review" i]');
+  for (const node of nodes) {
+    const label = cleanText(node.getAttribute('aria-label') || '');
+    const m = label.match(/([\d,]+)\s*reviews?/i);
+    if (m) return m[1].replace(/,/g, '');
+  }
+  const text = cleanText(root.innerText || '');
+  const m = text.match(/\(([\d,]+)\)\s*reviews?/i) || text.match(/([\d.,]+)\s*reviews?/i);
+  if (m) return String(m[1]).replace(/,/g, '');
+  return '';
+}
+
+function extractHours(root) {
+  const nodes = findIn(root, MapsDom.detailHours);
+  for (const node of nodes) {
+    const text = cleanText(node.innerText || node.getAttribute('aria-label') || '');
+    if (text && /(open|closed|hours|closes|opens|24 hours)/i.test(text)) return text;
+  }
+  const lines = panelTextLines();
+  for (const line of lines) {
+    if (/^(open|closes?|opens?|closed)\b/i.test(line)) return line;
+    if (/\b24 hours\b/i.test(line)) return line;
+  }
+  return '';
+}
+
+function extractPlusCode(root) {
+  const nodes = findIn(root, MapsDom.detailPlusCode);
+  for (const node of nodes) {
+    const text = cleanText(node.innerText || node.getAttribute('aria-label') || '');
+    const m = text.match(/([0-9A-Z]{7,8}\+[0-9A-Z]{2,3})/);
+    if (m) return m[1];
+  }
+  const text = cleanText(root.innerText || '');
+  const m = text.match(/([0-9A-Z]{7,8}\+[0-9A-Z]{2,3})/);
+  if (m) return m[1];
+  return '';
+}
+
+function extractCategoryAndPrice(root) {
+  const lines = panelTextLines();
+  const nameKey = lowerPlain(extractNameElement(root));
+  let category = '';
+  let price = '';
+  for (const line of lines) {
+    if (nameKey && lowerPlain(line) === nameKey) continue;
+    const lower = line.toLowerCase();
+    const priceMatch = line.match(/^(?:₹{1,5}|\${1,5})/);
+    if (priceMatch) {
+      price = priceMatch[0];
+      continue;
+    }
+    if (isProbablyPhone(line)) continue;
+    if (containsTemporarilyClosed(line)) continue;
+    if (/^\d(?:[.,]\d)?\s*[★]/.test(line)) continue;
+    if (/reviews?|ratings?|stars?\b/i.test(line)) continue;
+    if (/(open|closes?|opens?|closed|hours)\b/i.test(lower)) continue;
+    if (line.length > 40) continue;
+    if (/^(directions|call|share|save|more|menu)\b/i.test(lower)) continue;
+    category = line;
+    break;
+  }
+  return { category: category, priceLevel: price };
 }
 
 function extractFromFeedItem(article) {
@@ -304,6 +459,7 @@ function hasAnyDetailField(root) {
   const ctx = root || document;
   if (extractPhoneFromElement(ctx)) return true;
   if (extractAddressFromElement(ctx)) return true;
+  if (extractWebsite(ctx)) return true;
   return false;
 }
 
