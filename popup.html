@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+  <title>Maps Scraper Pro</title>
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" class="logo" aria-hidden="true">
+        <path fill="#EA4335" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+      </svg>
+      <div>
+        <h1>Maps Scraper Pro</h1>
+        <p class="sub">Bulk Google Maps &rarr; Excel</p>
+      </div>
+    </div>
+    <span id="statusPill" class="pill idle">Idle</span>
+  </header>
+
+  <main>
+    <!-- ============ STEP 1 : AREAS ============ -->
+    <section class="card" id="setupCard">
+      <div class="step">
+        <span class="num">1</span>
+        <div class="step-text">
+          <label for="areas">Area names</label>
+          <small>One per line &mdash; minimum 1, maximum 1000</small>
+        </div>
+        <span class="counter" id="areaCounter">0 / 1000</span>
+      </div>
+      <textarea id="areas" rows="7" spellcheck="false"
+        placeholder="Downtown&#10;Midtown&#10;Riverside District&#10;North Suburbs"></textarea>
+      <div class="row-between">
+        <div class="chips" id="sampleChips">
+          <button type="button" data-sample="New York|Brooklyn|Queens|Manhattan|The Bronx|Staten Island">US example</button>
+          <button type="button" data-sample="Dubai Marina|downtown dubai|Jumeirah|Business Bay|Deira">UAE example</button>
+          <button type="button" class="ghost" id="clearAreas">Clear</button>
+        </div>
+        <span class="hint" id="areaHint"></span>
+      </div>
+    </section>
+
+    <!-- ============ STEP 2 : PROFESSION ============ -->
+    <section class="card">
+      <div class="step">
+        <span class="num">2</span>
+        <div class="step-text">
+          <label for="profession">Profession</label>
+          <small>Searched as <code>&lt;profession&gt; in &lt;area&gt;</code></small>
+        </div>
+      </div>
+      <input id="profession" type="text" spellcheck="false" placeholder="e.g. Dentist, Plumber, Restaurant">
+      <div id="preview" class="preview"></div>
+    </section>
+
+    <!-- ============ STEP 3 : RUN ============ -->
+    <section class="card">
+      <div class="step">
+        <span class="num">3</span>
+        <div class="step-text">
+          <label>Run</label>
+          <small>Auto-scrolls every result on every area</small>
+        </div>
+      </div>
+
+      <details class="adv" id="advBox">
+        <summary>Advanced settings</summary>
+        <div class="adv-grid">
+          <label>Delay between areas (s)<input type="number" id="delayBetweenAreas" min="0" max="120" step="1"></label>
+          <label>Max scroll time per area (s)<input type="number" id="maxScrollSeconds" min="15" max="600" step="5"></label>
+          <label>Idle scrolls before stop<input type="number" id="stableRounds" min="2" max="30" step="1"></label>
+          <label>Warm-up delay (s)<input type="number" id="startDelaySeconds" min="0" max="120" step="1"></label>
+          <label class="chk"><input type="checkbox" id="dedupe"> Remove duplicate businesses</label>
+          <label class="chk"><input type="checkbox" id="stopOnBlocked"> Pause if Google shows a captcha</label>
+          <label class="wide">Maps domain<input type="text" id="mapsUrl" spellcheck="false"></label>
+        </div>
+      </details>
+
+      <div class="actions">
+        <button id="startBtn" class="primary">Start scraping</button>
+        <button id="pauseBtn" class="warn" hidden>Pause</button>
+        <button id="resumeBtn" class="primary" hidden>Resume</button>
+        <button id="skipBtn" class="ghost" hidden>Skip this area</button>
+        <button id="stopBtn" class="danger" hidden>Stop</button>
+      </div>
+      <p class="error" id="error" hidden></p>
+    </section>
+
+    <!-- ============ PROGRESS ============ -->
+    <section class="card" id="progressCard" hidden>
+      <div class="prog-head">
+        <div>
+          <div class="prog-label">Now scraping</div>
+          <div class="prog-area" id="curArea">&mdash;</div>
+        </div>
+        <div class="prog-nums">
+          <div><b id="pDone">0</b><span>areas</span></div>
+          <div><b id="pTotal">0</b><span>of</span></div>
+          <div><b id="pFound">0</b><span>results</span></div>
+        </div>
+      </div>
+      <div class="track"><div class="fill" id="pFill"></div></div>
+      <div class="prog-foot">
+        <span id="pEta"></span>
+        <span id="pElapsed"></span>
+      </div>
+      <div class="area-list" id="areaList"></div>
+    </section>
+
+    <!-- ============ EXPORT ============ -->
+    <section class="card" id="exportCard" hidden>
+      <div class="step">
+        <span class="num done">&#10003;</span>
+        <div class="step-text">
+          <label>Export</label>
+          <small id="exportMeta">&nbsp;</small>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="xlsxBtn" class="primary">Download Excel (.xlsx)</button>
+        <button id="csvBtn" class="ghost">Download CSV</button>
+        <button id="previewBtn" class="ghost">Preview data</button>
+        <button id="newJobBtn" class="ghost">New job</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="sheet-modal" id="previewModal" hidden>
+    <div class="sheet">
+      <div class="sheet-head">
+        <b id="previewTitle">Preview</b>
+        <button class="ghost" id="closePreview">Close</button>
+      </div>
+      <div class="sheet-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <div id="busy" class="busy" hidden><div class="spin"></div><span id="busyText">Building workbook&hellip;</span></div>
+
+  <script src="lib/xlsx.full.min.js"></script>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

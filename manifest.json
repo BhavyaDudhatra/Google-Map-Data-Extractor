@@ -1,49 +1,70 @@
 {
   "manifest_version": 3,
-  "name": "Maps Data Extractor",
+  "name": "Maps Scraper Pro - Area Bulk Extractor",
   "version": "1.0.0",
-  "description": "Automatically search Google Maps for any business category across up to 1000 areas, extract name/address/phone, and export everything to an Excel file.",
-  "minimum_chrome_version": "110",
+  "description": "Bulk-search Google Maps for a profession across 1-1000 named areas, auto-scroll every result, de-duplicate, and export to Excel.",
+  "minimum_chrome_version": "102",
   "permissions": [
     "storage",
     "unlimitedStorage",
     "tabs",
-    "activeTab",
+    "scripting",
+    "alarms",
     "notifications"
   ],
   "host_permissions": [
-    "https://www.google.com/*",
-    "https://maps.google.com/*",
-    "https://*.google.com/maps/*"
+    "https://www.google.com/maps/*"
+  ],
+  "optional_host_permissions": [
+    "https://*.google.com/maps/*",
+    "https://www.google.co.uk/maps/*",
+    "https://www.google.co.in/maps/*",
+    "https://www.google.ca/maps/*",
+    "https://www.google.com.au/maps/*",
+    "https://www.google.de/maps/*",
+    "https://www.google.fr/maps/*",
+    "https://www.google.es/maps/*",
+    "https://www.google.it/maps/*",
+    "https://www.google.nl/maps/*",
+    "https://www.google.co.jp/maps/*",
+    "https://www.google.com.br/maps/*",
+    "https://www.google.com.mx/maps/*",
+    "https://www.google.com.pk/maps/*",
+    "https://www.google.com.bd/maps/*",
+    "https://www.google.ae/maps/*",
+    "https://www.google.com.sg/maps/*",
+    "https://www.google.pl/maps/*",
+    "https://www.google.co.za/maps/*",
+    "https://www.google.com.ng/maps/*"
   ],
   "background": {
-    "service_worker": "background/service-worker.js",
+    "service_worker": "background.js",
     "type": "module"
   },
   "action": {
-    "default_popup": "popup/popup.html",
-    "default_title": "Maps Data Extractor"
+    "default_popup": "popup.html",
+    "default_title": "Maps Scraper Pro",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "icons": {
     "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
   "content_scripts": [
     {
       "matches": [
-        "https://www.google.com/*",
-        "https://maps.google.com/*"
+        "https://www.google.com/maps/*"
       ],
       "js": [
-        "content/selectors.js",
-        "content/extract.js",
-        "content/navigation.js",
-        "content/runner.js",
-        "content/content.js"
+        "content.js"
       ],
-      "run_at": "document_idle"
+      "run_at": "document_start",
+      "all_frames": false
     }
   ]
 }
