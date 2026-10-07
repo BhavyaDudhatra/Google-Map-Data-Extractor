@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" role="img" aria-label="Three sheet workbook filling with rows, ready to download">
+  <style>
+    text { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .ttl { fill: #e8eaed; font-size: 14px; font-weight: 600; }
+    .mut { fill: #9aa0a6; font-size: 11px; }
+    .cap { fill: #8b9096; font-size: 11px; }
+    .hd  { fill: #9aa0a6; font-size: 9.5px; font-weight: 700; letter-spacing: .5px; }
+    .cell { fill: #e8eaed; font-size: 11px; }
+    .cell2{ fill: #9aa0a6; font-size: 11px; }
+    .tab { fill: #9aa0a6; font-size: 11px; font-weight: 600; }
+    @keyframes rowIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      12%, 84% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(10px); }
+    }
+    .row { animation: rowIn 6s ease-in-out infinite; }
+    @keyframes on {
+      0%, 4% { opacity: 0; }
+      8%, 22% { opacity: 1; }
+      26%, 100% { opacity: 0; }
+    }
+    .on { opacity: 0; animation: on 6s ease-in-out infinite; }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+    .dl { animation: bob 2.4s ease-in-out infinite; }
+  </style>
+  <defs>
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3c4043" flood-opacity="0.13"/>
+    </filter>
+    <clipPath id="tbl"><rect x="24" y="52" width="392" height="110" rx="10"/></clipPath>
+  </defs>
+
+  <rect x="1" y="1" width="438" height="218" rx="16" fill="#16181d" stroke="#2e3138" filter="url(#sh)"/>
+
+  <text class="ttl" x="24" y="30">Workbook</text>
+  <text class="mut" x="416" y="29" text-anchor="end">.xlsx &#183; .csv</text>
+
+  <g clip-path="url(#tbl)">
+    <rect x="24" y="52" width="392" height="110" fill="#16181d"/>
+    <rect x="24" y="52" width="392" height="26" fill="#262a31"/>
+    <text class="hd" x="36"  y="69">NAME</text>
+    <text class="hd" x="180" y="69">PHONE</text>
+    <text class="hd" x="300" y="69">AREA</text>
+
+    <g class="row" style="animation-delay:.00s">
+      <text class="cell"  x="36"  y="98">Smile Dental</text>
+      <text class="cell2" x="180" y="98">+1 303 555 0142</text>
+      <text class="cell2" x="300" y="98">Downtown</text>
+    </g>
+    <rect x="24" y="105" width="392" height="1" fill="#23262c"/>
+    <g class="row" style="animation-delay:.50s">
+      <text class="cell"  x="36"  y="122">City Care Clinic</text>
+      <text class="cell2" x="180" y="122">+1 303 555 7781</text>
+      <text class="cell2" x="300" y="122">Midtown</text>
+    </g>
+    <rect x="24" y="129" width="392" height="1" fill="#23262c"/>
+    <g class="row" style="animation-delay:1.00s">
+      <text class="cell"  x="36"  y="146">Bright Ortho</text>
+      <text class="cell2" x="180" y="146">+1 303 555 2210</text>
+      <text class="cell2" x="300" y="146">Riverside</text>
+    </g>
+  </g>
+  <rect x="24" y="52" width="392" height="110" rx="10" fill="none" stroke="#2e3138"/>
+
+  <!-- the three sheets -->
+  <rect x="24" y="176" width="112" height="26" rx="13" fill="#262a31"/>
+  <rect class="on" x="24" y="176" width="112" height="26" rx="13" fill="#22304a" stroke="#8ab4f8" style="animation-delay:.3s"/>
+  <text class="tab" x="80"  y="193" text-anchor="middle">Businesses</text>
+
+  <rect x="142" y="176" width="64" height="26" rx="13" fill="#262a31"/>
+  <rect class="on" x="142" y="176" width="64" height="26" rx="13" fill="#22304a" stroke="#8ab4f8" style="animation-delay:2.3s"/>
+  <text class="tab" x="174" y="193" text-anchor="middle">Areas</text>
+
+  <rect x="212" y="176" width="76" height="26" rx="13" fill="#262a31"/>
+  <rect class="on" x="212" y="176" width="76" height="26" rx="13" fill="#22304a" stroke="#8ab4f8" style="animation-delay:4.3s"/>
+  <text class="tab" x="250" y="193" text-anchor="middle">Summary</text>
+
+  <g class="dl">
+    <path transform="translate(386 177)" fill="#8ab4f8"
+          d="M12 16 6 10h4V4h4v6h4l-6 6zm-8 4h16v2H4z"/>
+  </g>
+</svg>

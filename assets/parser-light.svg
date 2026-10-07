@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" role="img" aria-label="A single Maps card being parsed field by field into a record">
+  <style>
+    text { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .ttl { fill: #202124; font-size: 14px; font-weight: 600; }
+    .mut { fill: #5f6368; font-size: 11px; }
+    .nm  { fill: #202124; font-size: 13px; font-weight: 600; }
+    .val { fill: #5f6368; font-size: 11.5px; }
+    .chip{ fill: #5f6368; font-size: 11px; font-weight: 600; }
+    @keyframes scan { 0% { transform: translateX(0); } 100% { transform: translateX(392px); } }
+    .scan { animation: scan 3.2s linear infinite; }
+    @keyframes on {
+      0%, 4% { opacity: 0; }
+      8%, 22% { opacity: 1; }
+      26%, 100% { opacity: 0; }
+    }
+    .on { opacity: 0; animation: on 6s ease-in-out infinite; }
+  </style>
+  <defs>
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3c4043" flood-opacity="0.13"/>
+    </filter>
+    <clipPath id="cardClip"><rect x="24" y="46" width="392" height="150" rx="16"/></clipPath>
+  </defs>
+
+  <rect x="1" y="1" width="438" height="218" rx="16" fill="#ffffff" stroke="#e3e6ea" filter="url(#sh)"/>
+
+  <text class="ttl" x="24" y="30">Card parser</text>
+  <text class="mut" x="416" y="29" text-anchor="end">one card &#8594; one clean record</text>
+
+  <rect x="24" y="46" width="392" height="150" rx="16" fill="#f8f9fa" stroke="#eef0f2"/>
+
+  <text class="nm"  x="40" y="72">Smile Dental</text>
+  <text class="val" x="40" y="92">Dentist &#183; $$$ &#183; 4.8 / 5 (120 reviews)</text>
+  <text class="val" x="40" y="112">1200 Main St, Denver, CO</text>
+  <text class="val" x="40" y="132">+1 303 555 0142 &#160;&#160;&#183;&#160;&#160; smiledental.com</text>
+
+  <!-- extracted field chips, lit one after another -->
+  <rect x="40"  y="158" width="80" height="26" rx="13" fill="#f1f3f4"/>
+  <text class="chip" x="80"  y="175" text-anchor="middle">name</text>
+  <rect class="on" x="40"  y="158" width="80" height="26" rx="13" fill="#e8f0fe" stroke="#4285f4" style="animation-delay:.4s"/>
+  <text class="chip on" x="80"  y="175" text-anchor="middle" style="fill:#1a73e8;animation-delay:.4s">name</text>
+
+  <rect x="130" y="158" width="76" height="26" rx="13" fill="#f1f3f4"/>
+  <text class="chip" x="168" y="175" text-anchor="middle">rating</text>
+  <rect class="on" x="130" y="158" width="76" height="26" rx="13" fill="#e8f0fe" stroke="#4285f4" style="animation-delay:1.4s"/>
+  <text class="chip on" x="168" y="175" text-anchor="middle" style="fill:#1a73e8;animation-delay:1.4s">rating</text>
+
+  <rect x="216" y="158" width="76" height="26" rx="13" fill="#f1f3f4"/>
+  <text class="chip" x="254" y="175" text-anchor="middle">phone</text>
+  <rect class="on" x="216" y="158" width="76" height="26" rx="13" fill="#e8f0fe" stroke="#4285f4" style="animation-delay:2.4s"/>
+  <text class="chip on" x="254" y="175" text-anchor="middle" style="fill:#1a73e8;animation-delay:2.4s">phone</text>
+
+  <rect x="302" y="158" width="90" height="26" rx="13" fill="#f1f3f4"/>
+  <text class="chip" x="347" y="175" text-anchor="middle">website</text>
+  <rect class="on" x="302" y="158" width="90" height="26" rx="13" fill="#e8f0fe" stroke="#4285f4" style="animation-delay:3.4s"/>
+  <text class="chip on" x="347" y="175" text-anchor="middle" style="fill:#1a73e8;animation-delay:3.4s">website</text>
+
+  <g clip-path="url(#cardClip)">
+    <rect class="scan" x="24" y="46" width="2" height="150" fill="#4285f4" opacity=".45"/>
+  </g>
+</svg>

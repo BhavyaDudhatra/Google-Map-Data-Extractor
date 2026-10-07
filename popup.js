@@ -78,10 +78,18 @@ function validate() {
   const busy = lastState && (lastState.status === 'running' || lastState.status === 'stopping');
   const ready = areas.length >= 1 && areas.length <= MAX_AREAS && profession.length > 0 && !busy;
   $('startBtn').disabled = !ready;
-  $('startBtn').textContent = areas.length > MAX_AREAS
+  setStartLabel(areas.length > MAX_AREAS
     ? `Too many areas (${areas.length}/${MAX_AREAS})`
-    : busy ? 'Scraping…' : `Start scraping (${areas.length} area${areas.length === 1 ? '' : 's'})`;
+    : busy ? 'Scraping…' : `Start scraping (${areas.length} area${areas.length === 1 ? '' : 's'})`);
   return { areas, profession, ok: ready };
+}
+
+/* The start button carries an icon, so its text lives in a child span -
+   writing textContent on the button itself would wipe the icon. */
+function setStartLabel(text) {
+  const lbl = $('startBtnLabel');
+  if (lbl) lbl.textContent = text;
+  else $('startBtn').textContent = text;
 }
 
 function esc(s) {
@@ -141,7 +149,7 @@ async function start() {
   readCfg();
   hideError();
   $('startBtn').disabled = true;
-  $('startBtn').textContent = 'Starting…';
+  setStartLabel('Starting…');
 
   const payload = {
     areas: v.areas,

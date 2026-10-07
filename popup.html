@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="popup.css">
-  <title>Maps Scraper Pro</title>
+  <title>Google Data Extractor</title>
 </head>
 <body>
+  <div class="gbar" aria-hidden="true"><i class="b"></i><i class="r"></i><i class="y"></i><i class="g"></i></div>
+
   <header class="bar">
     <div class="brand">
-      <svg viewBox="0 0 24 24" class="logo" aria-hidden="true">
-        <path fill="#EA4335" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
-      </svg>
-      <div>
-        <h1>Maps Scraper Pro</h1>
-        <p class="sub">Bulk Google Maps &rarr; Excel</p>
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="21" height="21">
+          <path fill="#fff" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+        </svg>
+      </span>
+      <div class="brand-txt">
+        <h1>Google Data Extractor</h1>
+        <p class="sub">Bulk Maps search &rarr; clean spreadsheet</p>
       </div>
     </div>
     <span id="statusPill" class="pill idle">Idle</span>
@@ -23,15 +27,22 @@
     <!-- ============ STEP 1 : AREAS ============ -->
     <section class="card" id="setupCard">
       <div class="step">
-        <span class="num">1</span>
+        <span class="num n1">1</span>
         <div class="step-text">
           <label for="areas">Area names</label>
           <small>One per line &mdash; minimum 1, maximum 1000</small>
         </div>
         <span class="counter" id="areaCounter">0 / 1000</span>
       </div>
-      <textarea id="areas" rows="7" spellcheck="false"
-        placeholder="Downtown&#10;Midtown&#10;Riverside District&#10;North Suburbs"></textarea>
+
+      <div class="field field-area">
+        <svg class="field-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+        </svg>
+        <textarea id="areas" rows="7" spellcheck="false"
+          placeholder="Downtown&#10;Midtown&#10;Riverside District&#10;North Suburbs"></textarea>
+      </div>
+
       <div class="row-between">
         <div class="chips" id="sampleChips">
           <button type="button" data-sample="New York|Brooklyn|Queens|Manhattan|The Bronx|Staten Island">US example</button>
@@ -45,20 +56,27 @@
     <!-- ============ STEP 2 : PROFESSION ============ -->
     <section class="card">
       <div class="step">
-        <span class="num">2</span>
+        <span class="num n2">2</span>
         <div class="step-text">
           <label for="profession">Profession</label>
           <small>Searched as <code>&lt;profession&gt; in &lt;area&gt;</code></small>
         </div>
       </div>
-      <input id="profession" type="text" spellcheck="false" placeholder="e.g. Dentist, Plumber, Restaurant">
+
+      <div class="field field-search">
+        <svg class="field-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input id="profession" type="text" spellcheck="false" placeholder="e.g. Dentist, Plumber, Restaurant">
+      </div>
+
       <div id="preview" class="preview"></div>
     </section>
 
     <!-- ============ STEP 3 : RUN ============ -->
     <section class="card">
       <div class="step">
-        <span class="num">3</span>
+        <span class="num n3">3</span>
         <div class="step-text">
           <label>Run</label>
           <small>Auto-scrolls every result on every area</small>
@@ -66,7 +84,10 @@
       </div>
 
       <details class="adv" id="advBox">
-        <summary>Advanced settings</summary>
+        <summary>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6z"/></svg>
+          Advanced settings
+        </summary>
         <div class="adv-grid">
           <label>Delay between areas (s)<input type="number" id="delayBetweenAreas" min="0" max="120" step="1"></label>
           <label>Max scroll time per area (s)<input type="number" id="maxScrollSeconds" min="15" max="600" step="5"></label>
@@ -79,11 +100,26 @@
       </details>
 
       <div class="actions">
-        <button id="startBtn" class="primary">Start scraping</button>
-        <button id="pauseBtn" class="warn" hidden>Pause</button>
-        <button id="resumeBtn" class="primary" hidden>Resume</button>
-        <button id="skipBtn" class="ghost" hidden>Skip this area</button>
-        <button id="stopBtn" class="danger" hidden>Stop</button>
+        <button id="startBtn" class="primary">
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <span id="startBtnLabel">Start scraping</span>
+        </button>
+        <button id="pauseBtn" class="warn" hidden>
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+          <span>Pause</span>
+        </button>
+        <button id="resumeBtn" class="primary" hidden>
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <span>Resume</span>
+        </button>
+        <button id="skipBtn" class="ghost" hidden>
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 18l8.5-6L6 6v12zm2 0V6l6.5 6L8 18zM16 6v12h2V6h-2z"/></svg>
+          <span>Skip this area</span>
+        </button>
+        <button id="stopBtn" class="danger" hidden>
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 6h12v12H6z"/></svg>
+          <span>Stop</span>
+        </button>
       </div>
       <p class="error" id="error" hidden></p>
     </section>
@@ -92,7 +128,10 @@
     <section class="card" id="progressCard" hidden>
       <div class="prog-head">
         <div>
-          <div class="prog-label">Now scraping</div>
+          <div class="prog-label">
+            <svg class="mini" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+            Now scraping
+          </div>
           <div class="prog-area" id="curArea">&mdash;</div>
         </div>
         <div class="prog-nums">
@@ -119,25 +158,48 @@
         </div>
       </div>
       <div class="actions">
-        <button id="xlsxBtn" class="primary">Download Excel (.xlsx)</button>
-        <button id="csvBtn" class="ghost">Download CSV</button>
-        <button id="previewBtn" class="ghost">Preview data</button>
-        <button id="newJobBtn" class="ghost">New job</button>
+        <button id="xlsxBtn" class="primary">
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 16 6 10h4V4h4v6h4l-6 6zm-8 4h16v2H4z"/></svg>
+          <span>Download Excel (.xlsx)</span>
+        </button>
+        <button id="csvBtn" class="ghost">
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 16 6 10h4V4h4v6h4l-6 6zm-8 4h16v2H4z"/></svg>
+          <span>Download CSV</span>
+        </button>
+        <button id="previewBtn" class="ghost">
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5c-5 0-9 4.5-10 7 1 2.5 5 7 10 7s9-4.5 10-7c-1-2.5-5-7-10-7zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+          <span>Preview data</span>
+        </button>
+        <button id="newJobBtn" class="ghost">
+          <svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          <span>New job</span>
+        </button>
       </div>
     </section>
   </main>
 
+  <footer class="foot">
+    <span class="gdots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span>Unofficial tool &middot; not affiliated with Google</span>
+  </footer>
+
   <div class="sheet-modal" id="previewModal" hidden>
     <div class="sheet">
       <div class="sheet-head">
-        <b id="previewTitle">Preview</b>
+        <span class="sheet-title">
+          <svg class="mini" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          <b id="previewTitle">Preview</b>
+        </span>
         <button class="ghost" id="closePreview">Close</button>
       </div>
       <div class="sheet-body" id="previewBody"></div>
     </div>
   </div>
 
-  <div id="busy" class="busy" hidden><div class="spin"></div><span id="busyText">Building workbook&hellip;</span></div>
+  <div id="busy" class="busy" hidden>
+    <div class="spin"></div>
+    <span id="busyText">Building workbook&hellip;</span>
+  </div>
 
   <script src="lib/xlsx.full.min.js"></script>
   <script type="module" src="popup.js"></script>

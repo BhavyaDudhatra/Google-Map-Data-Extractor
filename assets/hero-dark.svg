@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" width="960" height="320" role="img" aria-label="Google Maps results auto-scrolling and being extracted into an Excel spreadsheet">
+  <style>
+    text { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .t   { fill: #e8eaed; font-size: 14px; font-weight: 600; }
+    .q   { fill: #e8eaed; font-size: 13px; }
+    .m   { fill: #9aa0a6; font-size: 12px; }
+    .s   { fill: #8b9096; font-size: 11px; }
+    .hd  { fill: #9aa0a6; font-size: 10.5px; font-weight: 700; letter-spacing: .6px; }
+    .cell{ fill: #e8eaed; font-size: 11px; }
+    .cell2{ fill: #9aa0a6; font-size: 11px; }
+
+    @keyframes rowIn {
+      0%   { opacity: 0; transform: translateX(-12px); }
+      10%, 82% { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(-12px); }
+    }
+    .row { animation: rowIn 6s ease-in-out infinite; }
+
+    @keyframes flow {
+      0%   { transform: translateX(0); opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { transform: translateX(104px); opacity: 0; }
+    }
+    .dot { animation: flow 1.5s linear infinite; }
+
+    @keyframes pop {
+      0%, 55% { opacity: 0; transform: scale(.4); }
+      65%     { opacity: 1; transform: scale(1.2); }
+      72%, 94%{ opacity: 1; transform: scale(1); }
+      100%    { opacity: 0; transform: scale(.4); }
+    }
+    .pop { transform-box: fill-box; transform-origin: center; animation: pop 6s ease-in-out infinite; animation-delay: 2.6s; }
+
+    @keyframes prog { 0% { transform: scaleX(0); } 75%, 100% { transform: scaleX(1); } }
+    .prog { transform-box: fill-box; transform-origin: left center; animation: prog 6s ease-in-out infinite; }
+
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    .pin { animation: bob 2.4s ease-in-out infinite; }
+
+    @keyframes halo { 0% { transform: scale(.5); opacity: .38; } 100% { transform: scale(1.9); opacity: 0; } }
+    .halo { transform-box: fill-box; transform-origin: center; animation: halo 2.4s ease-out infinite; }
+
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    .caret { animation: blink 1.05s steps(1, end) infinite; }
+
+    @keyframes sheetHead { 0%, 100% { fill: #2d9148; } 50% { fill: #1e7b41; } }
+    .shead { animation: sheetHead 6s ease-in-out infinite; }
+  </style>
+
+  <defs>
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3c4043" flood-opacity="0.14"/>
+    </filter>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8ab4f8"/>
+      <stop offset="0.34" stop-color="#f28b82"/>
+      <stop offset="0.67" stop-color="#fdd663"/>
+      <stop offset="1" stop-color="#81c995"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="959" height="319" rx="18" fill="#1e2126" stroke="#2e3138"/>
+
+  <!-- ============ left: the Maps search ============ -->
+  <g filter="url(#sh)">
+    <rect x="36" y="36" width="400" height="248" rx="16" fill="#16181d" stroke="#2e3138"/>
+  </g>
+
+  <circle class="halo" cx="70" cy="64" r="11" fill="#f28b82"/>
+  <g class="pin">
+    <path transform="translate(56 50) scale(1.15)" fill="#f28b82"
+          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+  </g>
+  <text class="t" x="90" y="69">Google Maps search</text>
+  <rect x="352" y="54" width="60" height="20" rx="10" fill="#1e3329"/>
+  <text class="hd" x="382" y="68" text-anchor="middle" style="fill:#81c995">LIVE</text>
+
+  <!-- query box -->
+  <rect x="60" y="84" width="352" height="34" rx="17" fill="#262a31"/>
+  <path transform="translate(76 93) scale(0.85)" fill="#9aa0a6"
+        d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+  <text class="q" x="104" y="106">Dentist in Downtown</text>
+  <rect class="caret" x="240" y="94" width="1.5" height="14" fill="#8ab4f8"/>
+
+  <!-- auto-scrolling result cards -->
+  <g class="row" style="animation-delay:.00s">
+    <rect x="60" y="134" width="352" height="30" rx="8" fill="#1e2126" stroke="#23262c"/>
+    <circle cx="78" cy="149" r="5" fill="#8ab4f8"/>
+    <rect x="92" y="141" width="118" height="7" rx="3.5" fill="#4c515a"/>
+    <rect x="92" y="152" width="74" height="5" rx="2.5" fill="#33373e"/>
+    <text class="s" x="396" y="153" text-anchor="end">4.8</text>
+  </g>
+  <g class="row" style="animation-delay:.30s">
+    <rect x="60" y="168" width="352" height="30" rx="8" fill="#1e2126" stroke="#23262c"/>
+    <circle cx="78" cy="183" r="5" fill="#f28b82"/>
+    <rect x="92" y="175" width="140" height="7" rx="3.5" fill="#4c515a"/>
+    <rect x="92" y="186" width="60" height="5" rx="2.5" fill="#33373e"/>
+    <text class="s" x="396" y="187" text-anchor="end">4.6</text>
+  </g>
+  <g class="row" style="animation-delay:.60s">
+    <rect x="60" y="202" width="352" height="30" rx="8" fill="#1e2126" stroke="#23262c"/>
+    <circle cx="78" cy="217" r="5" fill="#fdd663"/>
+    <rect x="92" y="209" width="104" height="7" rx="3.5" fill="#4c515a"/>
+    <rect x="92" y="220" width="88" height="5" rx="2.5" fill="#33373e"/>
+    <text class="s" x="396" y="221" text-anchor="end">4.9</text>
+  </g>
+  <g class="row" style="animation-delay:.90s">
+    <rect x="60" y="236" width="352" height="30" rx="8" fill="#1e2126" stroke="#23262c"/>
+    <circle cx="78" cy="251" r="5" fill="#81c995"/>
+    <rect x="92" y="243" width="128" height="7" rx="3.5" fill="#4c515a"/>
+    <rect x="92" y="254" width="52" height="5" rx="2.5" fill="#33373e"/>
+    <text class="s" x="396" y="255" text-anchor="end">4.7</text>
+  </g>
+
+  <!-- ============ middle: the extraction pipeline ============ -->
+  <rect x="464" y="116" width="72" height="28" rx="14" fill="#22304a" stroke="#3d5680"/>
+  <text x="500" y="135" text-anchor="middle" font-size="12" font-weight="600" fill="#8ab4f8">Extract</text>
+
+  <line x1="446" y1="176" x2="554" y2="176" stroke="#3a3f47" stroke-width="2" stroke-dasharray="6 6"/>
+  <circle class="dot" cx="446" cy="176" r="4" fill="#8ab4f8" style="animation-delay:0s"/>
+  <circle class="dot" cx="446" cy="176" r="4" fill="#f28b82" style="animation-delay:.5s"/>
+  <circle class="dot" cx="446" cy="176" r="4" fill="#fdd663" style="animation-delay:1s"/>
+
+  <text class="s" x="500" y="204" text-anchor="middle">auto-scroll</text>
+  <text class="s" x="500" y="220" text-anchor="middle">de-dupe</text>
+  <text class="s" x="500" y="236" text-anchor="middle">export</text>
+
+  <!-- ============ right: the spreadsheet ============ -->
+  <g filter="url(#sh)">
+    <rect x="560" y="36" width="364" height="248" rx="16" fill="#16181d" stroke="#2e3138"/>
+  </g>
+  <path class="shead" d="M576 36h332a16 16 0 0 1 16 16v24H560V52a16 16 0 0 1 16-16z"/>
+  <text x="578" y="63" font-size="13" font-weight="600" fill="#fff">Excel &#183; Businesses</text>
+  <text x="912" y="63" text-anchor="end" font-size="11" fill="#fff" opacity=".85">.xlsx</text>
+
+  <rect x="576" y="86" width="332" height="24" rx="6" fill="#262a31"/>
+  <text class="hd" x="586" y="102">NAME</text>
+  <text class="hd" x="742" y="102">PHONE</text>
+  <text class="hd" x="856" y="102">AREA</text>
+
+  <g class="row" style="animation-delay:1.40s">
+    <rect x="576" y="114" width="332" height="28" rx="6" fill="#16181d" stroke="#23262c"/>
+    <text class="cell"  x="586" y="132">Smile Dental</text>
+    <text class="cell2" x="742" y="132">+1 303 555 0142</text>
+    <text class="cell2" x="856" y="132">Downtown</text>
+  </g>
+  <g class="row" style="animation-delay:1.75s">
+    <rect x="576" y="146" width="332" height="28" rx="6" fill="#16181d" stroke="#23262c"/>
+    <text class="cell"  x="586" y="164">City Care Clinic</text>
+    <text class="cell2" x="742" y="164">+1 303 555 7781</text>
+    <text class="cell2" x="856" y="164">Midtown</text>
+  </g>
+  <g class="row" style="animation-delay:2.10s">
+    <rect x="576" y="178" width="332" height="28" rx="6" fill="#16181d" stroke="#23262c"/>
+    <text class="cell"  x="586" y="196">Bright Ortho</text>
+    <text class="cell2" x="742" y="196">+1 303 555 2210</text>
+    <text class="cell2" x="856" y="196">Riverside</text>
+  </g>
+  <g class="row" style="animation-delay:2.45s">
+    <rect x="576" y="210" width="332" height="28" rx="6" fill="#16181d" stroke="#23262c"/>
+    <text class="cell"  x="586" y="228">Nova Health</text>
+    <text class="cell2" x="742" y="228">+1 303 555 9034</text>
+    <text class="cell2" x="856" y="228">North Side</text>
+  </g>
+
+  <g class="pop">
+    <circle cx="894" cy="262" r="15" fill="#237a45"/>
+    <path d="M887 262l5 5 9-10" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- ============ 4-colour progress bar ============ -->
+  <rect x="36" y="300" width="888" height="6" rx="3" fill="#e8eaed"/>
+  <rect class="prog" x="36" y="300" width="888" height="6" rx="3" fill="url(#bar)"/>
+</svg>

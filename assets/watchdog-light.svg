@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" role="img" aria-label="Heartbeat monitor: stale tab is detected and reloaded">
+  <style>
+    text { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .ttl { fill: #202124; font-size: 14px; font-weight: 600; }
+    .mut { fill: #5f6368; font-size: 11px; }
+    .cap { fill: #80868b; font-size: 11px; }
+    .lbl { fill: #5f6368; font-size: 11.5px; font-weight: 600; }
+    @keyframes run { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -1020; } }
+    .pulse { stroke-dasharray: 130 900; animation: run 3s linear infinite; }
+    @keyframes on {
+      0%, 4% { opacity: 0; }
+      8%, 22% { opacity: 1; }
+      26%, 100% { opacity: 0; }
+    }
+    .on { opacity: 0; animation: on 6s ease-in-out infinite; }
+  </style>
+  <defs>
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3c4043" flood-opacity="0.13"/>
+    </filter>
+  </defs>
+
+  <rect x="1" y="1" width="438" height="218" rx="16" fill="#ffffff" stroke="#e3e6ea" filter="url(#sh)"/>
+
+  <text class="ttl" x="24" y="30">Watchdog</text>
+  <text class="mut" x="416" y="29" text-anchor="end">alarm every 60s</text>
+
+  <path d="M24 100 H110 l12-30 l12 60 l12-30 H240 l12-30 l12 60 l12-30 H370 l12-30 l12 60 l12-30 H416"
+        fill="none" stroke="#e2e5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="pulse"
+        d="M24 100 H110 l12-30 l12 60 l12-30 H240 l12-30 l12 60 l12-30 H370 l12-30 l12 60 l12-30 H416"
+        fill="none" stroke="#34a853" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="24" y="140" width="126" height="30" rx="15" fill="#f8f9fa" stroke="#eef0f2"/>
+  <rect class="on" x="24" y="140" width="126" height="30" rx="15" fill="#e6f4ea" stroke="#34a853" style="animation-delay:.3s"/>
+  <circle cx="44" cy="155" r="5" fill="#34a853"/>
+  <text class="lbl" x="58" y="159">heartbeat ok</text>
+
+  <rect x="157" y="140" width="126" height="30" rx="15" fill="#f8f9fa" stroke="#eef0f2"/>
+  <rect class="on" x="157" y="140" width="126" height="30" rx="15" fill="#fce8e6" stroke="#ea4335" style="animation-delay:1.9s"/>
+  <circle cx="177" cy="155" r="5" fill="#ea4335"/>
+  <text class="lbl" x="191" y="159">tab stalled</text>
+
+  <rect x="290" y="140" width="126" height="30" rx="15" fill="#f8f9fa" stroke="#eef0f2"/>
+  <rect class="on" x="290" y="140" width="126" height="30" rx="15" fill="#e8f0fe" stroke="#4285f4" style="animation-delay:3.5s"/>
+  <circle cx="310" cy="155" r="5" fill="#4285f4"/>
+  <text class="lbl" x="324" y="159">reloaded</text>
+
+  <text class="cap" x="220" y="196" text-anchor="middle">no heartbeat after 150s &#8594; tab bounced back to the current area</text>
+</svg>

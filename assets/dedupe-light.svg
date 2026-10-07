@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" role="img" aria-label="Two duplicate listings collapsing into a single unique row">
+  <style>
+    text { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .ttl { fill: #202124; font-size: 14px; font-weight: 600; }
+    .mut { fill: #5f6368; font-size: 11px; }
+    .cap { fill: #80868b; font-size: 11px; }
+    .nm  { fill: #202124; font-size: 12px; font-weight: 600; }
+    .big { fill: #1a73e8; font-size: 15px; font-weight: 700; }
+    @keyframes converge {
+      0%, 20% { opacity: 1; transform: translateX(0); }
+      42%, 94% { opacity: 0; transform: translateX(74px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    .dupes { animation: converge 6s ease-in-out infinite; }
+    @keyframes appear {
+      0%, 12% { opacity: 0; transform: scale(.92); }
+      28%, 86% { opacity: 1; transform: scale(1); }
+      96%, 100% { opacity: 0; transform: scale(.95); }
+    }
+    .one { opacity: 0; animation: appear 6s ease-in-out infinite; animation-delay: 2.3s; transform-box: fill-box; transform-origin: center; }
+  </style>
+  <defs>
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3c4043" flood-opacity="0.13"/>
+    </filter>
+  </defs>
+
+  <rect x="1" y="1" width="438" height="218" rx="16" fill="#ffffff" stroke="#e3e6ea" filter="url(#sh)"/>
+
+  <text class="ttl" x="24" y="30">De-dupe</text>
+  <text class="mut" x="416" y="29" text-anchor="end">placeId &#8594; cid &#8594; name+addr+phone</text>
+
+  <!-- the two hits that are really the same business -->
+  <g class="dupes">
+    <rect x="24" y="64" width="150" height="48" rx="10" fill="#f8f9fa" stroke="#eef0f2"/>
+    <circle cx="42" cy="82" r="5" fill="#4285f4"/>
+    <rect x="56" y="76" width="82" height="7" rx="3.5" fill="#c9cdd2"/>
+    <rect x="56" y="89" width="58" height="5" rx="2.5" fill="#e2e5e9"/>
+    <text class="cap" x="46" y="105" font-size="10">found in Downtown</text>
+
+    <rect x="24" y="124" width="150" height="48" rx="10" fill="#f8f9fa" stroke="#eef0f2"/>
+    <circle cx="42" cy="142" r="5" fill="#4285f4"/>
+    <rect x="56" y="136" width="82" height="7" rx="3.5" fill="#c9cdd2"/>
+    <rect x="56" y="149" width="58" height="5" rx="2.5" fill="#e2e5e9"/>
+    <text class="cap" x="46" y="165" font-size="10">found in Midtown</text>
+  </g>
+
+  <text x="217" y="102" text-anchor="middle" font-size="22" fill="#5f6368">&#8594;</text>
+  <text class="big" x="217" y="132" text-anchor="middle">2 &#8594; 1</text>
+  <text class="cap" x="217" y="152" text-anchor="middle">one row</text>
+
+  <!-- the single unique row that survives -->
+  <g class="one">
+    <rect x="260" y="94" width="156" height="52" rx="12" fill="#e6f4ea" stroke="#34a853"/>
+    <circle cx="280" cy="114" r="6" fill="#34a853"/>
+    <text class="nm"  x="294" y="118">Smile Dental</text>
+    <text class="cap" x="280" y="137">2 areas &#183; 0 duplicates</text>
+  </g>
+
+  <text class="cap" x="416" y="186" text-anchor="end">the repeat still fills missing fields</text>
+</svg>

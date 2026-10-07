@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Maps Scraper Pro - Area Bulk Extractor",
+  "name": "Google Data Extractor",
   "version": "1.0.0",
   "description": "Bulk-search Google Maps for a profession across 1-1000 named areas, auto-scroll every result, de-duplicate, and export to Excel.",
   "minimum_chrome_version": "102",
@@ -43,7 +43,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Maps Scraper Pro",
+    "default_title": "Google Data Extractor",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
