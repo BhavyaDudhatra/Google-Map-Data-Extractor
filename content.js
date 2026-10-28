@@ -164,13 +164,15 @@
      a bare digit run like +13035550142 is normal; the untrusted text fallback
      keeps the stricter rule so a review count or a shop name cannot pass. */
   function normPhone(raw, trusted) {
-    const s = clean(safeDecode(raw)
-      .replace(/^tel:/i, '')
-      .replace(/^phone:[\s:_-]*(?:tel:)?/i, '')
-      .replace(/^tel:[\s:_-]*/i, ''));
+    let s = safeDecode(raw);
+    s = s.replace(/^tel:/i, '')
+         .replace(/^phone:[\s:_-]*(?:tel:)?/i, '')
+         .replace(/^tel:[\s:_-]*/i, '')
+         .replace(/^call[:\s]+/i, '');
+    s = clean(s);
     if (!s) return '';
 
-    /* Split on characters that cannot occur in a number so a label with prose
+      /* Split on characters that cannot occur in a number so a label with prose
        around it still yields the number alone, then take the first run that
        passes validation. */
     for (const part of s.split(/[^\d+()\u00a0.\- ]+/g)) {
@@ -316,13 +318,10 @@
     if (!address && streetishText(card)) address = streetishText(card);
     address = address.replace(/^Address:\s*/i, '').trim();
 
-    /* ---- phone ----
-     * Maps buries the number differently on nearly every layout, so try the
-     * explicit machine-readable sources first and only then fall back to reading
-     * an unlabelled button. Every path ends in normPhone, so a lookalike string
-     * is dropped rather than exported. */
+    /* ---- phone ---- */
     let phone = '';
-    for (const a of card.querySelectorAll('a[href^="tel:"], a[href^="TEL:"]')) {
+    // Try tel: links first
+    for (const a of card.querySelectorAll('a[href^="tel:"], a[href^="TEL:"], a[href*="tel:"]')) {
       phone = normPhone(a.getAttribute('href'), true);
       if (phone) break;
     }
@@ -352,6 +351,26 @@
         if (phone) break;
       }
     }
+    // Aggressive fallback for real Maps pages where phone might be in different elements
+    if (!phone) {
+      const allEls = card.querySelectorAll('button, div, span, a');
+      for (const el of allEls) {
+        if (el.querySelector('[role="heading"]')) continue;
+        const al = el.getAttribute('aria-label') || el.getAttribute('title') || '';
+        const text = clean(el.textContent);
+        // Skip if it's clearly a review/rating element
+        if (REVIEW_RE.test(al) || STAR_RE.test(al) || REVIEW_RE.test(text) || STAR_RE.test(text)) continue;
+        // Look for phone patterns
+        if (/\+\d{7,}/.test(text) || /\(\d{3}\)[-.\s]?\d{3}[-.\s]?\d{4}/.test(text) || /\d{3}[-.\s]\d{3}[-.\s]\d{4}/.test(text)) {
+          const p = normPhone(text, true); // be more lenient
+          if (p) { phone = p; break; }
+        }
+        if (/\+\d{7,}/.test(al)) {
+          const p = normPhone(al, true);
+          if (p) { phone = p; break; }
+        }
+      }
+    }
 
     /* ---- website ---- */
     let website = '';
@@ -373,16 +392,34 @@
     }
     if (website && !/^https?:\/\//i.test(website)) website = 'https://' + website.replace(/^\/+/, '');
 
-    /* ---- open status / price / plus code ---- */
+    /* ---- open status / hours / price / plus code ---- */
     let openStatus = '';
+    let hours = '';
     for (const el of card.querySelectorAll('[aria-label], span, div')) {
       const al = clean(el.getAttribute('aria-label') || '');
-      if (/^(open|closed|permanently closed)\b/i.test(al)) { openStatus = al; break; }
+      if (!hours && /hours|opening hours|horaire|horario|orari|営業時間/i.test(al) && /[0-9]/.test(al) && al.length < 200) {
+        hours = clean(al.replace(/^(hours|opening hours):\s*/i, ''));
+      }
+      if (!openStatus && /^(open|closed|permanently closed|temporarily closed)\b/i.test(al)) { openStatus = al; break; }
+      if (!openStatus && /\b(temporarily closed|permanently closed)\b/i.test(al)) { openStatus = clean(al); break; }
       if (!openStatus && el.children.length === 0) {
         const t = clean(el.textContent);
-        if (/^(open|closed|permanently closed)$/i.test(t)) { openStatus = t; break; }
+        if (/^(open|closed|permanently closed|temporarily closed)$/i.test(t)) { openStatus = t; break; }
+        if (/\b(temporarily closed|permanently closed)\b/i.test(t)) { openStatus = t; break; }
         if (/^(opens? \d|closing soon|opens? at)/i.test(t)) { openStatus = t; break; }
+        if (/\b(closes|opens)\b/i.test(t) && t.length < 80) { openStatus = t; break; }
       }
+    }
+    // also scan all text as fallback for status
+    if (!openStatus) {
+      const all = clean(card.textContent);
+      const m = all.match(/\b(permanently closed|temporarily closed|open now|closed now|opens at [^·\n]+|closes at [^·\n]+|closing soon|opens soon)\b/i);
+      if (m) openStatus = clean(m[0]);
+    }
+    if (!hours) {
+      const all = clean(card.textContent);
+      const hm = all.match(/(\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[^\n]{0,60}\d{1,2}:\d{2}[^\n]{0,40})/i);
+      if (hm) hours = clean(hm[1]);
     }
 
     let price = '';
@@ -427,6 +464,7 @@
       reviews: ratingCount === '' ? '' : ratingCount,
       price,
       openStatus,
+      hours,
       address,
       phone,
       website,
