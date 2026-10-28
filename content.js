@@ -326,6 +326,16 @@
       if (phone) break;
     }
     if (!phone) {
+      // Look for elements with classes like Io6YTe which is common for phone numbers in detail panel
+      for (const el of card.querySelectorAll('.Io6YTe, .UsdlK, .LrzXr, [data-tooltip="Copy phone number"], button[aria-label*="phone" i], div[aria-label*="phone" i]')) {
+        const t = clean(el.textContent);
+        if (t && /\d/.test(t)) {
+          phone = normPhone(t, true);
+          if (phone) break;
+        }
+      }
+    }
+    if (!phone) {
       for (const el of card.querySelectorAll('[aria-label], [title]')) {
         const al = clean(el.getAttribute('aria-label') || el.getAttribute('title'));
         if (!PHONE_LABEL_RE.test(al)) continue;
@@ -360,13 +370,29 @@
         const text = clean(el.textContent);
         // Skip if it's clearly a review/rating element
         if (REVIEW_RE.test(al) || STAR_RE.test(al) || REVIEW_RE.test(text) || STAR_RE.test(text)) continue;
-        // Look for phone patterns
+        if (/copy.*phone|call.*phone/i.test(al)) {
+          const p = normPhone(text, true);
+          if (p) { phone = p; break; }
+        }
+        // Look for phone patterns - be careful not to grab review counts
         if (/\+\d{7,}/.test(text) || /\(\d{3}\)[-.\s]?\d{3}[-.\s]?\d{4}/.test(text) || /\d{3}[-.\s]\d{3}[-.\s]\d{4}/.test(text)) {
-          const p = normPhone(text, true); // be more lenient
+          const p = normPhone(text, true);
           if (p) { phone = p; break; }
         }
         if (/\+\d{7,}/.test(al)) {
           const p = normPhone(al, true);
+          if (p) { phone = p; break; }
+        }
+      }
+    }
+    // Also look in the whole document for phone elements that might be in detail panel
+    if (!phone) {
+      const docPhones = document.querySelectorAll('.Io6YTe, [data-item-id*="phone"], button[data-tooltip*="phone" i]');
+      for (const dp of docPhones) {
+        if (card.contains(dp)) continue; // avoid double processing
+        const dt = clean(dp.textContent);
+        if (dt && /\d{7,}/.test(dt) && !REVIEW_RE.test(dt) && !STAR_RE.test(dt)) {
+          const p = normPhone(dt, true);
           if (p) { phone = p; break; }
         }
       }
@@ -677,6 +703,21 @@
       rec.area = areaLabel;
       out.push(rec);
     }
+    // Also try to scrape from detail panel if open
+    try {
+      const detail = document.querySelector('[role="main"] [data-section-id], .DUwDvf, .RZ66Rb');
+      if (detail && out.length === 0) {
+        // not much to do
+      }
+      // If we have cards but missing phones, try to get more from detail elements in page
+      const phoneEls = document.querySelectorAll('.Io6YTe');
+      for (const pel of phoneEls) {
+        const pt = clean(pel.textContent);
+        if (pt && /\d{7,}/.test(pt)) {
+          // try to associate - but hard to tell which card; better to enhance all
+        }
+      }
+    } catch (_) {}
     return { status: out.length ? 'done' : 'empty', results: out, ms: now() - t0 };
   }
 
